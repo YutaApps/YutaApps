@@ -5,21 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>French Guidebook - Yuta Apps</title>
     
-    <!-- Fonts and Icons (These are fine) -->
+    <!-- Fonts and Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
 
-    <!-- FIX #1: ADD A LINK TO YOUR MAIN WEBSITE'S STYLESHEET -->
+    <!-- Link to your MAIN website's stylesheet -->
     <link rel="stylesheet" href="/YutaApps/css/style.css">
 
-    <!-- Your app's specific stylesheet (this loads AFTER the main one) -->
-    <link rel="stylesheet" href="fr_learn_style.css">
+    <!-- === THIS IS THE FIX === Link to the APP'S stylesheet using the FULL path -->
+    <link rel="stylesheet" href="/YutaApps/Apps/fr_learn/fr_learn_style.css">
 </head>
 <body>
-
-    <!-- FIX #2: ADD A WRAPPER AND A "BACK" LINK TO INTEGRATE WITH YOUR SITE -->
     <main class="app-wrapper">
         <a href="/YutaApps/apps.html" class="back-link">&larr; Back to All Apps</a>
 
@@ -27,7 +25,6 @@
             <header class="app-header">
                 <i class="fa-solid fa-book-open"></i> French Guidebook
             </header>
-
             <div class="main-layout">
                 <nav id="sidebar" class="sidebar">
                     <h2>Units</h2>
@@ -35,7 +32,6 @@
                         <!-- Navigation links will be dynamically inserted here -->
                     </ul>
                 </nav>
-
                 <main id="content-area" class="content-area">
                     <div class="placeholder">
                         <h2>Welcome!</h2>
@@ -44,10 +40,7 @@
                 </main>
             </div>
         </div>
-
-    </main> <!-- End of the new wrapper -->
-
-    <!-- Your script link is correct and doesn't need to be changed -->
-    <script src="fr_learn_script.js"></script>
+    </main>
+    <script src="/YutaApps/Apps/fr_learn/fr_learn_script.js"></script>
 </body>
 </html>
