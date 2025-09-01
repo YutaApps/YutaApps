@@ -29,7 +29,8 @@ document.addEventListener('DOMContentLoaded', () => {
             contentArea.innerHTML = `<div class="placeholder">
                 <h2>Error Loading Guidebook!</h2>
                 <p>Could not load data from <code>fr_learn_script.txt</code>.</p>
-                <p>Please make sure the file exists in the same folder as <code>index.html</code> and is not empty.</p>
+                <p>There might be a formatting error in the text file or a script error.</p>
+                <p>Error details: ${error.message}</p>
             </div>`;
         });
 
@@ -67,8 +68,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 const titleLine = lines[1].trim();
                 const phraseBlocks = details.split('--- Example Phrase ---').filter(p => p.trim());
                 const phrases = phraseBlocks.map(block => {
-                    const french = block.match(/French:\s*(.*)/)?.[1].trim() || '';
-                    const english = block.match(/English:\s*(.*)/)?.[1].trim() || '';
+                    // --- FIX IS HERE: Added ?. before .trim() to prevent crash ---
+                    const french = block.match(/French:\s*(.*)/)?.[1]?.trim() || '';
+                    const english = block.match(/English:\s*(.*)/)?.[1]?.trim() || '';
                     return { type: 'phrase', french, english };
                 });
                 return { type: 'KEY PHRASES', title: titleLine, items: phrases };
@@ -87,8 +89,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 tipBlocks.slice(1).forEach((blockContent, i) => {
                     const blockType = blockTypes[i];
                      if (blockType === 'Example Phrase') {
-                        const french = blockContent.match(/French:\s*(.*)/)?.[1].trim() || '';
-                        const english = blockContent.match(/English:\s*(.*)/)?.[1].trim() || '';
+                        // --- FIX IS HERE: Added ?. before .trim() to prevent crash ---
+                        const french = blockContent.match(/French:\s*(.*)/)?.[1]?.trim() || '';
+                        const english = blockContent.match(/English:\s*(.*)/)?.[1]?.trim() || '';
                         tipContent.push({ type: 'phrase', french, english });
                     } else if (blockType === 'Table') {
                         const tableParts = blockContent.split('-------------');
