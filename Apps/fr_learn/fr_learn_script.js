@@ -28,8 +28,9 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error("Error loading or parsing guidebook data:", error);
             contentArea.innerHTML = `<div class="placeholder">
                 <h2>Error Loading Guidebook!</h2>
-                <p>Could not load data from <code>fr_learn_script.txt</code>.</p>
-                <p>There might be a formatting error in the text file or a script error.</p>
+                <p>Could not load or parse data from <code>fr_learn_script.txt</code>.</p>
+                <p><b>This is likely a browser caching issue or a script error.</b></p>
+                <p>Please try a hard refresh (Ctrl+Shift+R) or open in an Incognito window.</p>
                 <p>Error details: ${error.message}</p>
             </div>`;
         });
@@ -45,8 +46,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const lines = ("TITLE:" + unitText).trim().split('\n');
             const titleLine = lines.find(line => line.startsWith('TITLE:'));
             const title = titleLine ? titleLine.replace('TITLE:', '').trim() : `Unit ${index + 1}`;
-            const description = lines[2] || '';
-            const content = lines.slice(2).join('\n').trim();
+            // SAFETY FIX: Added a check for lines[2] before using it.
+            const description = lines.length > 2 ? lines[2] : '';
+            const content = lines.slice(3).join('\n').trim();
             
             return {
                 id: `unit-${index}`,
@@ -61,14 +63,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const sections = content.split('------------------------------').filter(s => s.trim() !== '');
         return sections.map(section => {
             const lines = section.trim().split('\n');
-            const type = lines[0].trim();
+            const type = lines[0]?.trim() || 'UNKNOWN'; // Safety check
             const details = lines.slice(1).join('\n').trim();
 
             if (type === 'KEY PHRASES') {
-                const titleLine = lines[1].trim();
+                const titleLine = lines[1]?.trim() || 'Key Phrases'; // Safety check
                 const phraseBlocks = details.split('--- Example Phrase ---').filter(p => p.trim());
                 const phrases = phraseBlocks.map(block => {
-                    // --- FIX IS HERE: Added ?. before .trim() to prevent crash ---
+                    // --- THE MAIN FIX IS HERE ---
                     const french = block.match(/French:\s*(.*)/)?.[1]?.trim() || '';
                     const english = block.match(/English:\s*(.*)/)?.[1]?.trim() || '';
                     return { type: 'phrase', french, english };
@@ -82,24 +84,26 @@ document.addEventListener('DOMContentLoaded', () => {
                 const tipBody = details.split('\n').slice(1).join('\n');
                 const tipBlocks = tipBody.split(/--- (?:Example Phrase|Table) ---/);
                 const blockTypes = [...tipBody.matchAll(/--- (Example Phrase|Table) ---/g)].map(match => match[1]);
-                const initialText = tipBlocks[0].trim();
+                const initialText = tipBlocks[0]?.trim(); // Safety check
                 if (initialText) {
                     tipContent.push({ type: 'paragraph', text: initialText });
                 }
                 tipBlocks.slice(1).forEach((blockContent, i) => {
                     const blockType = blockTypes[i];
                      if (blockType === 'Example Phrase') {
-                        // --- FIX IS HERE: Added ?. before .trim() to prevent crash ---
+                        // --- THE MAIN FIX IS HERE ---
                         const french = blockContent.match(/French:\s*(.*)/)?.[1]?.trim() || '';
                         const english = blockContent.match(/English:\s*(.*)/)?.[1]?.trim() || '';
                         tipContent.push({ type: 'phrase', french, english });
                     } else if (blockType === 'Table') {
                         const tableParts = blockContent.split('-------------');
-                        const tableRowsText = tableParts[0].trim();
-                        const tableRows = tableRowsText.split('\n');
-                        const headers = tableRows[0].split('|').map(h => h.trim());
-                        const rows = tableRows.slice(1).map(row => row.split('|').map(cell => cell.trim()));
-                        tipContent.push({ type: 'table', headers, rows });
+                        const tableRowsText = tableParts[0]?.trim(); // Safety check
+                        if (tableRowsText) {
+                            const tableRows = tableRowsText.split('\n');
+                            const headers = (tableRows[0] || '').split('|').map(h => h.trim()); // Safety check
+                            const rows = tableRows.slice(1).map(row => row.split('|').map(cell => cell.trim()));
+                            tipContent.push({ type: 'table', headers, rows });
+                        }
                         const afterTableText = tableParts[1]?.trim();
                         if(afterTableText) {
                             tipContent.push({type: 'paragraph', text: afterTableText});
