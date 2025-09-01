@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const contentArea = document.getElementById('content-area');
 
     // Fetch the guidebook data from the external text file
-    fetch('fr_learn_script.txt')
+    fetch('/YutaApps/Apps/fr_learn/fr_learn_script.txt')
         .then(response => {
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
